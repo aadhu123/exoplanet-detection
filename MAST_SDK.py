@@ -76,11 +76,11 @@ class MAST:
 
     @staticmethod
     def fetchLightCurve(kicId, downloadDir):
-        if (type(kicId) is int):
-            kicId = str(kicId)
-        elif (type(kicId) is not str):
-            raise Exception("The KIC ID needs to be of type `str`")
-
+        if (type(kicId) is not int and type(kicId) is not str):
+            raise Exception("The KIC ID needs to be of type `str` or `int`")
+    
+        kicId = str(kicId)
+    
         # KIC ID has 9 digits
         kicId = kicId.zfill(9)
         # See https://archive.stsci.edu/kepler/download_options.html for specs
@@ -90,7 +90,7 @@ class MAST:
         fileName = re.search("kplr%s_lc_Q\d+.tar"%kicId, response).group(0)
 
         downloadPath = os.path.join(downloadDir, fileName)
-        print("Tar file downloading to %s..."%downloadPath)
+        print("Tar file downloading to %s"%downloadPath)
         urllib.request.urlretrieve(url + fileName, downloadPath)
         print("Download complete\nUnpacking...")
         tar = tarfile.open(downloadPath)
@@ -98,7 +98,7 @@ class MAST:
         tar.close()
         print("Unpacked to %s\nUnlinking tar file..."%os.path.join(downloadDir, kicId))
         os.unlink(downloadPath)
-        print("Process completed")
+        print("Process completed\n")
         
     
     def parseCSV(self, CSVString):

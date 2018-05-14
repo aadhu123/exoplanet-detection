@@ -6,4 +6,4 @@ from MAST_SDK import *
 #     "ktc_kepler_id": "757076"
 # })
 
-data = MAST.fetchLightCurve("000757076", "/Users/philippe/Dev/exoplanet-detection/data")
+MAST.fetchLightCurve(757076, "/Users/philippe/Dev/exoplanet-detection/data")
