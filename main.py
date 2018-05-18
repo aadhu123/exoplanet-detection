@@ -2,29 +2,31 @@
 # Execute this script using `./main.py` and let the magic happen
 
 import sys
-from astropy.io import fits
 from MAST_SDK import *
 import glob
-
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
+import utils
+import os.path
+from nn import *
 
 realDir = os.path.dirname(os.path.realpath(__file__))
 
 dataDir = os.path.join(realDir, "data")
 imgDir = os.path.join(realDir, "img")
 logsDir = os.path.join(realDir, "logs")
-myDPI = 50
-pixels = 250
+
+modelName = "model.hdf5"
+
+nn = NN()
+nn.load(modelName)
 
 def main():
     kicIds = [
+        11446443, # this one has an exoplanet
         757076,
-        # 757099,
-        # 757137,
-        # 757231,
-        # 757280,
+        757099,
+        757137,
+        757231,
+        757280,
     ]
 
     # Make required directories if not exists
@@ -40,7 +42,7 @@ def main():
     print("Importing data\n-----------------")
 
     for kicId in kicIds:
-        importData(kicId)
+        utils.importData(dataDir, kicId)
     
     print("-- done --\n\nProcessing data\n-----------------")
 
@@ -50,17 +52,10 @@ def main():
 
     print("-- done --\n\nAI magic, watch your logs directory\n-----------------")
 
+    for kicId in kicIds:
+        predict(kicId)
+
     print("-- done --\n")
-
-
-def importData(kicId):
-    # KIC ID has 9 digits
-    kicId = str(kicId).zfill(9)
-    if os.path.exists(os.path.join(dataDir, kicId)):
-        print("Data already available for KIC ID %s"%kicId)
-    else:
-        MAST.fetchLightCurve(kicId, dataDir)
-
 
 def processData(kicId):
     kicId = str(kicId).zfill(9)
@@ -73,19 +68,17 @@ def processData(kicId):
 
     for filePath in filePaths:
         fitsToImage(filePath, imgDirKic)
-    
 
-def fitsToImage(filePath, imgDirKic):
-    hdul = fits.open(filePath)
-    data = hdul[1].data
-    hdul.close()
-    fileName = os.path.splitext(os.path.basename(filePath))[0]
-    fig = plt.Figure(figsize=(pixels/50, pixels/50), dpi=50)
-    ax = fig.add_subplot(111)
-    ax.set_axis_off()
-    ax.scatter(data["TIME"], data["SAP_FLUX"], s = 1, c = "k")
-    canvas = FigureCanvas(fig)
-    canvas.print_figure(os.path.join(imgDirKic, fileName))
+def predict(kicId):
+    kicId = str(kicId).zfill(9)
+    imgDirKic = os.path.join(imgDir, kicId)
+    files = glob.glob(os.path.join(imgDirKic, "*"))
+    
+    imgs = []
+    for f in files:
+        imgs.append(imread(f)[:,:,0:1])
+
+    print(nn.predict(np.array(imgs)).flatten().mean())
 
 if __name__ == '__main__':
     main()

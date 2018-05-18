@@ -100,7 +100,6 @@ class MAST:
         os.unlink(downloadPath)
         print("Process completed\n")
         
-    
     def parseCSV(self, CSVString):
         CSVArray = []
 
@@ -108,4 +107,3 @@ class MAST:
             CSVArray.append(line.split(","))
         
         return np.array(CSVArray)
-

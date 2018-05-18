@@ -1,4 +1,6 @@
 __pycache__/
 data
+tmp
 img
 logs
+models
