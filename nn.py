@@ -14,7 +14,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 class NN:
     modelDir = os.path.join(realDir, "models")
     model = []
-    dimensions = (256, 256)
+    dimensions = (300, 300)
 
     def __init__(self):
         if not os.path.exists(self.modelDir):
@@ -24,9 +24,9 @@ class NN:
 
     def __setUpNN(self):
         model = tf.keras.Sequential([
-            tf.keras.layers.Conv2D(128, (3, 3), activation = "relu", input_shape = (self.dimensions[0], self.dimensions[1], 1)),
+            tf.keras.layers.Conv2D(5, (50, 50), activation = "relu", input_shape = (self.dimensions[0], self.dimensions[1], 1)),
             tf.keras.layers.MaxPooling2D(pool_size = (2, 2)),
-            tf.keras.layers.Conv2D(128, (3, 3), activation = "relu"),
+            tf.keras.layers.Conv2D(10, (4, 4), activation = "relu"),
             tf.keras.layers.MaxPooling2D(pool_size = (2, 2)),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(128, activation = 'relu'),
@@ -42,9 +42,9 @@ class NN:
 
         return model
 
-    def trainingData(self, dataDir, batch_size):
+    def trainingData(self, dataDir):
         exoplanetData = glob.glob(os.path.join(dataDir, "*_1.png"))
-        noExoplanetData = glob.glob(os.path.join(dataDir, "*_1.png"))
+        noExoplanetData = glob.glob(os.path.join(dataDir, "*_0.png"))
 
         files = np.append(
             noExoplanetData,
@@ -61,13 +61,14 @@ class NN:
             np.ones(len(exoplanetData))
         )
 
-        randomize = np.random.randint(len(data), size = batch_size)
+        randomize = np.random.randint(len(data), size = len(data))
         return data[randomize], labels[randomize]
 
-    def train(self, dataDir, batch_size = 400, epochs = 20):
+    def train(self, dataDir, epochs = 5):
         # self.model.fit_generator(generator(dataDir, batch_size), samples_per_epoch = 100, nb_epoch = 2, verbose = 2, show_accuracy = True, callbacks = [], validation_data = None, class_weight = None, nb_worker = 1)
-        data, labels = self.trainingData(dataDir, batch_size)
-        self.model.fit(data, labels, batch_size = round(batch_size / 4), epochs = epochs)
+        data, labels = self.trainingData(dataDir)
+        self.model.fit(data, labels, batch_size = 40, epochs = epochs, validation_split = 0.1)
+        self.save('model.hdf5')
 
     def predict(self, data):
         return self.model.predict(data)

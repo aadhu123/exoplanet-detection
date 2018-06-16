@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-# Execute this script using `./main.py` and let the magic happen
+
+###
+### This script does predictions for all the data available in the `./data` directory.
+### The results will be put into a log file in the `./logs` directory with as name
+### the date-timestamp of execution.
+###
 
 import sys
 from MAST_SDK import *
@@ -7,12 +12,14 @@ import glob
 import utils
 import os.path
 from nn import *
+import datetime
+import math
 
 realDir = os.path.dirname(os.path.realpath(__file__))
 
 dataDir = os.path.join(realDir, "data")
-imgDir = os.path.join(realDir, "img")
 logsDir = os.path.join(realDir, "logs")
+logfile = os.path.join(logsDir, datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"))
 
 modelName = "model.hdf5"
 
@@ -20,42 +27,27 @@ nn = NN()
 nn.load(modelName)
 
 def main():
-    kicIds = [
-        11446443, # this one has an exoplanet
-        757076,
-        757099,
-        757137,
-        757231,
-        757280,
-    ]
-
-    # Make required directories if not exists
-    if not os.path.exists(dataDir):
-        os.makedirs(dataDir)
-    if not os.path.exists(imgDir):
-        os.makedirs(imgDir)
     if not os.path.exists(logsDir):
         os.makedirs(logsDir)
+
+    print("Predicting\n-----------------")
     
+    utils.writeToLog(logfile, "KIC ID      images surpassed threshold/total\n")
+    kicDirs = glob.glob(os.path.join(dataDir, "*"))
 
-    # First fetch all data
-    print("Importing data\n-----------------")
+    print("Progress: [  0%] [{0}]".format('.' * 50), end='\r')
 
-    for kicId in kicIds:
-        utils.importData(dataDir, kicId)
-    
-    print("-- done --\n\nProcessing data\n-----------------")
+    for idx, kicDir in enumerate(kicDirs):
+        predict(kicDir)
+        percentage = math.ceil(100 * (idx + 1) / len(kicDirs))
+        print("Progress: [{0}%] [{1}{2}]".format(
+                                                "%3s"%percentage,
+                                                '#' * math.ceil(percentage / 2), 
+                                                '.' * (50 - math.ceil(percentage / 2))), 
+                                                end='\r'
+                                            )
 
-    # Then start processing
-    for kicId in kicIds:
-        processData(kicId)
-
-    print("-- done --\n\nAI magic, watch your logs directory\n-----------------")
-
-    for kicId in kicIds:
-        predict(kicId)
-
-    print("-- done --\n")
+    print("\n")
 
 def processData(kicId):
     kicId = str(kicId).zfill(9)
@@ -67,18 +59,21 @@ def processData(kicId):
         os.makedirs(imgDirKic)
 
     for filePath in filePaths:
-        fitsToImage(filePath, imgDirKic)
+        utils.fitsToImage(filePath, imgDirKic, os.path.splitext(os.path.basename(filePath))[0])
 
-def predict(kicId):
-    kicId = str(kicId).zfill(9)
-    imgDirKic = os.path.join(imgDir, kicId)
-    files = glob.glob(os.path.join(imgDirKic, "*"))
+def predict(kicDir):
+    kicId = os.path.basename(kicDir)
+    files = glob.glob(os.path.join(kicDir, "*"))
     
     imgs = []
     for f in files:
         imgs.append(imread(f)[:,:,0:1])
 
-    print(nn.predict(np.array(imgs)).flatten().mean())
+    probabilities = nn.predict(np.array(imgs)).flatten()
+    threshold = 0.9
+    surpassed = sum([p > threshold for p in probabilities])
+    if surpassed != 0:
+        utils.writeToLog(logfile, "%s   %s/%s\n"%(kicId, surpassed, len(probabilities)))
 
 if __name__ == '__main__':
     main()

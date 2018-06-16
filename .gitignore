@@ -1,6 +1,6 @@
 __pycache__/
-data
-tmp
-img
-logs
-models
+/data
+/tmp
+/logs
+/models
+!/models/model.hdf5

@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
+###
+### This script is meant to import some data to the `./data` directory in order to start
+### predicting.
+###
+
+
 from MAST_SDK import *
 import glob
 import utils
 import shutil
-
 
 tmpDir = os.path.join(utils.realDir, "tmp")
 dataDir = os.path.join(utils.realDir, "data")
@@ -14,14 +19,32 @@ def deleteTempFiles(kicId):
 
     shutil.rmtree(os.path.join(tmpDir, kicId))
 
+# def processData(kicId, hasExoplanet):
+#     kicId = str(kicId).zfill(9)
+    
+#     filePaths = glob.glob(os.path.join(tmpDir, kicId, "*.fits"))
+
+#     for (idx, filePath) in enumerate(filePaths):
+#         fileName = "%s_%i_%i"%(kicId, idx, hasExoplanet)
+#         utils.fitsToImage(filePath, dataDir, fileName)
+
+
 def processData(kicId, hasExoplanet):
     kicId = str(kicId).zfill(9)
     
     filePaths = glob.glob(os.path.join(tmpDir, kicId, "*.fits"))
 
+    kicDir = os.path.join(dataDir, kicId)
+    if os.path.exists(kicDir):
+        print("Directory of KIC ID %s already exists"%(kicId))
+        return
+
+    os.makedirs(kicDir)
+    
     for (idx, filePath) in enumerate(filePaths):
-        fileName = "%s_%i_%i"%(kicId, idx, hasExoplanet)
-        utils.fitsToImage(filePath, dataDir, fileName)
+        fileName = os.path.splitext(os.path.basename(filePath))[0]
+        utils.fitsToImage(filePath, kicDir, fileName)
+
 
 # Make required directories if not exists
 if not os.path.exists(tmpDir):
@@ -29,29 +52,25 @@ if not os.path.exists(tmpDir):
 if not os.path.exists(dataDir):
     os.makedirs(dataDir)
 
-mast = MAST("kepler/confirmed_planets")
-
-confirmedPlanetKicIds = np.unique(mast.search({
-    "max_records": 20
-})[2:,1])
-
-mast.setDataSet("kepler/data_search")
+mast = MAST("kepler/data_search")
 
 kicIds = mast.search({
-    "max_records": confirmedPlanetKicIds.size, # same amount of data without exoplanets
+    "max_records": 50, # same amount of data without exoplanets
     "sci_data_quarter": 0, # avoid duplicate ids
-    "condition_flag": "" # make sure that there are no anomalies in system
 })[2:,0]
 
+## Use this to retrieve published/confirmed planets
+# mast.setDataSet("kepler/published_planets")
 
-for kicId in confirmedPlanetKicIds:
-    utils.importData(tmpDir, kicId)
-    processData(kicId, 1)
-    deleteTempFiles(kicId)
+# confirmedPlanetKicIds = np.unique(mast.search({
+#     "max_records": 200
+# })[2:,1])
 
-for kicId in kicIds:
-    utils.importData(tmpDir, kicId)
-    processData(kicId, 0)
-    deleteTempFiles(kicId)
+
+for i in range(len(kicIds)):
+    print("%i/%i"%(i + 1, len(kicIds)))
+    utils.importData(tmpDir, kicIds[i])
+    processData(kicIds[i], 0)
+    # deleteTempFiles(kicId)
 
 print("Data import finished\n")
