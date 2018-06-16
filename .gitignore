@@ -3,4 +3,3 @@ __pycache__/
 /tmp
 /logs
 /models
-!/models/model.hdf5
