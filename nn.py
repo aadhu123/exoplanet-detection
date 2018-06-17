@@ -10,6 +10,7 @@ from matplotlib.image import imread
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+np.random.seed(0)
 
 class NN:
     modelDir = os.path.join(realDir, "models")
@@ -59,9 +60,10 @@ class NN:
             np.ones(len(exoplanetData))
         )
 
-        return data, labels
+        randomize = np.random.randint(len(data), size = len(data))
+        return data[randomize], labels[randomize]
 
-    def train(self, dataDir, batch_size = 32, epochs = 8):
+    def train(self, dataDir, batch_size = 40, epochs = 8):
         data, labels = self.trainingData(dataDir)
         self.model.fit(data, labels, batch_size = batch_size, epochs = epochs, validation_split = 0.1)
 
