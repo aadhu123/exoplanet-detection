@@ -34,8 +34,6 @@ class NN:
             tf.keras.layers.Dense(1, activation = 'sigmoid'),
         ])
 
-        # sgd = tf.keras.optimizers.SGD(lr=0., decay=1e-6, momentum=0.9, nesterov=True)
-
         model.compile(optimizer = 'adam',
                       loss = 'binary_crossentropy',
                       metrics = ['accuracy'])
@@ -61,20 +59,17 @@ class NN:
             np.ones(len(exoplanetData))
         )
 
-        randomize = np.random.randint(len(data), size = len(data))
-        return data[randomize], labels[randomize]
+        return data, labels
 
-    def train(self, dataDir, epochs = 5):
-        # self.model.fit_generator(generator(dataDir, batch_size), samples_per_epoch = 100, nb_epoch = 2, verbose = 2, show_accuracy = True, callbacks = [], validation_data = None, class_weight = None, nb_worker = 1)
+    def train(self, dataDir, batch_size = 32, epochs = 8):
         data, labels = self.trainingData(dataDir)
-        self.model.fit(data, labels, batch_size = 40, epochs = epochs, validation_split = 0.1)
-        self.save('model.hdf5')
+        self.model.fit(data, labels, batch_size = batch_size, epochs = epochs, validation_split = 0.1)
 
     def predict(self, data):
         return self.model.predict(data)
 
-    def load(self, modelName):
+    def load(self, modelName = 'model.hdf5'):
         self.model = tf.keras.models.load_model(os.path.join(self.modelDir, modelName))
 
-    def save(self, modelName):
+    def save(self, modelName = 'model.hdf5'):
         return self.model.save(os.path.join(self.modelDir, modelName))
