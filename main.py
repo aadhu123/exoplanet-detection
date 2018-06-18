@@ -14,14 +14,13 @@ import os.path
 from nn import *
 import datetime
 import math
-
-realDir = os.path.dirname(os.path.realpath(__file__))
+from utils import realDir
 
 dataDir = os.path.join(realDir, "data")
 logsDir = os.path.join(realDir, "logs")
-logfile = os.path.join(logsDir, datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"))
+logfile = os.path.join(logsDir, datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%S.csv"))
 
-modelName = "model.hdf5"
+modelName = "model_3.hdf5"
 
 nn = NN()
 nn.load(modelName)
@@ -32,7 +31,7 @@ def main():
 
     print("Predicting\n-----------------")
     
-    utils.writeToLog(logfile, "KIC ID      images surpassed threshold/total\n")
+    utils.writeToLog(logfile, "KIC ID,surpassed threshold,total,ratio\n")
     kicDirs = glob.glob(os.path.join(dataDir, "*"))
 
     print("Progress: [  0%] [{0}]".format('.' * 50), end='\r')
@@ -49,18 +48,6 @@ def main():
 
     print("\n")
 
-def processData(kicId):
-    kicId = str(kicId).zfill(9)
-    print("Processing KIC ID %s"%kicId)
-    filePaths = glob.glob(os.path.join(dataDir, kicId, "*.fits"))
-
-    imgDirKic = os.path.join(imgDir, kicId)
-    if not os.path.exists(imgDirKic):
-        os.makedirs(imgDirKic)
-
-    for filePath in filePaths:
-        utils.fitsToImage(filePath, imgDirKic, os.path.splitext(os.path.basename(filePath))[0])
-
 def predict(kicDir):
     kicId = os.path.basename(kicDir)
     files = glob.glob(os.path.join(kicDir, "*"))
@@ -73,7 +60,7 @@ def predict(kicDir):
     threshold = 0.9
     surpassed = sum([p > threshold for p in probabilities])
     if surpassed != 0:
-        utils.writeToLog(logfile, "%s   %s/%s\n"%(kicId, surpassed, len(probabilities)))
+        utils.writeToLog(logfile, "%s,%s,%s,%s\n"%(kicId, surpassed, len(probabilities), surpassed/len(probabilities)))
 
 if __name__ == '__main__':
     main()
