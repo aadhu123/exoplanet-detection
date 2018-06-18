@@ -28,19 +28,21 @@ def deleteTempFiles(kicId):
 #         fileName = "%s_%i_%i"%(kicId, idx, hasExoplanet)
 #         utils.fitsToImage(filePath, dataDir, fileName)
 
+def dataExists(kicId):
+    kicDir = os.path.join(dataDir, kicId)
+
+    if os.path.exists(kicDir):
+        print("Directory of KIC ID %s already exists\n"%(kicId))
+        return True
+
+    return False
 
 def processData(kicId, hasExoplanet):
-    kicId = str(kicId).zfill(9)
+    kicDir = os.path.join(dataDir, kicId)
+    os.makedirs(kicDir)
     
     filePaths = glob.glob(os.path.join(tmpDir, kicId, "*.fits"))
 
-    kicDir = os.path.join(dataDir, kicId)
-    if os.path.exists(kicDir):
-        print("Directory of KIC ID %s already exists"%(kicId))
-        return
-
-    os.makedirs(kicDir)
-    
     for (idx, filePath) in enumerate(filePaths):
         fileName = os.path.splitext(os.path.basename(filePath))[0]
         utils.fitsToImage(filePath, kicDir, fileName)
@@ -55,7 +57,7 @@ if not os.path.exists(dataDir):
 mast = MAST("kepler/data_search")
 
 kicIds = mast.search({
-    "max_records": 50, # same amount of data without exoplanets
+    "max_records": 3000, # same amount of data without exoplanets
     "sci_data_quarter": 0, # avoid duplicate ids
 })[2:,0]
 
@@ -69,8 +71,13 @@ kicIds = mast.search({
 
 for i in range(len(kicIds)):
     print("%i/%i"%(i + 1, len(kicIds)))
-    utils.importData(tmpDir, kicIds[i])
-    processData(kicIds[i], 0)
-    # deleteTempFiles(kicId)
+    kicId = str(kicIds[i]).zfill(9)
+
+    if dataExists(kicId):
+        continue
+    
+    utils.importData(tmpDir, kicId)
+    processData(kicId, 0)
+    deleteTempFiles(kicId)
 
 print("Data import finished\n")
