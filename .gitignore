@@ -1,5 +1,6 @@
 __pycache__/
 /data
 /tmp
-/logs
+/logs/*
+!/logs/log.csv
 /models
