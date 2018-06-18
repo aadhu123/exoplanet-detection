@@ -7,6 +7,7 @@ This project requires Python3.
 ## How to use
  - Fork the repo
  - Clone your forked repo
+ - Run the command `./train.py` to train your model, it will be saved as `./models/model.hdf5`
  - Tweek the `./data_import.py` script to your likings (or not) and run it
  - Run the command `./main.py`
  - The exoplanet candidates' KIC IDs will be output in the file `./logs/{currentISOdate}`
