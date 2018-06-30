@@ -1,4 +1,4 @@
-from MAST_SDK import *
+from MAST import *
 
 mast = MAST("kepler/confirmed_planets")
 

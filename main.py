@@ -7,7 +7,7 @@
 ###
 
 import sys
-from MAST_SDK import *
+from MAST import *
 import glob
 import utils
 import os.path
