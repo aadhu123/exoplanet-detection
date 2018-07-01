@@ -9,41 +9,41 @@ import tarfile
 # This SDK does not support all features of the API, but is simply a simple wrapper around
 # it to keep your code cleaner.
 class MAST:
-    __rootUrl = "https://archive.stsci.edu/"
-    __baseUrl = ""
+    __rootUrl = 'https://archive.stsci.edu/'
+    __baseUrl = ''
     # All avaiables MAST data sets (https://archive.stsci.edu/vo/mast_services.html)
     __dataSets = [
-        "hst",
-        "hsc_sum",
-        "hsc",
-        "kepler/data_search",
-        "kepler/kepler_fov",
-        "kepler/kic10",
-        "kepler/kgmatch",
-        "kepler/confirmed_planets",
-        "kepler/published_planets",
-        "kepler/koi",
-        "kepler/ffi",
-        "k2/epic",
-        "k2/data_search",
-        "k2/published_planets",
-        "k2/ffi",
-        "iue",
-        "hut",
-        "euve",
-        "fuse",
-        "uit",
-        "wuppe",
-        "befs",
-        "tues",
-        "imaps",
-        "hlsp",
-        "pointings",
-        "copernicus",
-        "hpol",
-        "vlafirst",
-        "xmm-om",
-        "swift_uvot"
+        'hst',
+        'hsc_sum',
+        'hsc',
+        'kepler/data_search',
+        'kepler/kepler_fov',
+        'kepler/kic10',
+        'kepler/kgmatch',
+        'kepler/confirmed_planets',
+        'kepler/published_planets',
+        'kepler/koi',
+        'kepler/ffi',
+        'k2/epic',
+        'k2/data_search',
+        'k2/published_planets',
+        'k2/ffi',
+        'iue',
+        'hut',
+        'euve',
+        'fuse',
+        'uit',
+        'wuppe',
+        'befs',
+        'tues',
+        'imaps',
+        'hlsp',
+        'pointings',
+        'copernicus',
+        'hpol',
+        'vlafirst',
+        'xmm-om',
+        'swift_uvot'
     ]
 
     def __init__(self, dataSet):
@@ -57,7 +57,7 @@ class MAST:
                                 "\n".join(self.__dataSets)
                             ))
         
-        self.__baseUrl = self.__rootUrl + dataSet + "/search.php?outputformat=CSV&action=Search&"
+        self.__baseUrl = self.__rootUrl + dataSet + '/search.php?outputformat=CSV&action=Search&'
     
     # An open function to search the data sets, not secure, it could be that requests fail
     # if not used properly. See https://archive.stsci.edu/vo/mast_services.html for more
@@ -66,7 +66,7 @@ class MAST:
         searchUrl = self.__baseUrl
 
         if (type(params) is not dict):
-            raise Exception("The `params` argument needs has to be of type `dict`")
+            raise Exception('The `params` argument needs has to be of type `dict`')
 
         for field, value in params.items():
             searchUrl += "{field}={value}&".format(field=field, value=value)
@@ -77,7 +77,7 @@ class MAST:
     @staticmethod
     def fetchLightCurve(kicId, downloadDir):
         if (type(kicId) is not int and type(kicId) is not str):
-            raise Exception("The KIC ID needs to be of type `str` or `int`")
+            raise Exception('The KIC ID needs to be of type `str` or `int`')
     
         kicId = str(kicId)
     
@@ -104,6 +104,6 @@ class MAST:
         CSVArray = []
 
         for line in CSVString.splitlines():
-            CSVArray.append(line.split(","))
+            CSVArray.append(line.split(','))
         
         return np.array(CSVArray)

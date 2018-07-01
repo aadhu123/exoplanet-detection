@@ -11,8 +11,8 @@ import glob
 import utils
 import shutil
 
-tmpDir = os.path.join(utils.realDir, "tmp")
-dataDir = os.path.join(utils.realDir, "data")
+tmpDir = os.path.join(utils.realDir, 'tmp')
+dataDir = os.path.join(utils.realDir, 'data')
 
 def deleteTempFiles(kicId):
     kicId = str(kicId).zfill(9)
@@ -41,7 +41,7 @@ def processData(kicId, hasExoplanet):
     kicDir = os.path.join(dataDir, kicId)
     os.makedirs(kicDir)
     
-    filePaths = glob.glob(os.path.join(tmpDir, kicId, "*.fits"))
+    filePaths = glob.glob(os.path.join(tmpDir, kicId, '*.fits'))
 
     for (idx, filePath) in enumerate(filePaths):
         fileName = os.path.splitext(os.path.basename(filePath))[0]
@@ -54,11 +54,11 @@ if not os.path.exists(tmpDir):
 if not os.path.exists(dataDir):
     os.makedirs(dataDir)
 
-mast = MAST("kepler/data_search")
+mast = MAST('kepler/data_search')
 
 kicIds = mast.search({
-    "max_records": 3000, # same amount of data without exoplanets
-    "sci_data_quarter": 0, # avoid duplicate ids
+    'max_records':      3000, # same amount of data without exoplanets
+    'sci_data_quarter': 0, # avoid duplicate ids
 })[2:,0]
 
 ## Use this to retrieve published/confirmed planets

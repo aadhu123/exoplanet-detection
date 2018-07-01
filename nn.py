@@ -13,7 +13,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 np.random.seed(0)
 
 class NN:
-    modelDir = os.path.join(realDir, "models")
+    modelDir = os.path.join(realDir, 'models')
     model = []
     dimensions = (300, 300)
 
@@ -25,9 +25,15 @@ class NN:
 
     def __setUpNN(self):
         model = tf.keras.Sequential([
-            tf.keras.layers.Conv2D(5, (50, 50), activation = "relu", input_shape = (self.dimensions[0], self.dimensions[1], 1)),
+            tf.keras.layers.Conv2D(5, (50, 50), activation = 'relu', 
+                input_shape = (
+                    self.dimensions[0], 
+                    self.dimensions[1], 
+                    1
+                )
+            ),
             tf.keras.layers.MaxPooling2D(pool_size = (2, 2)),
-            tf.keras.layers.Conv2D(10, (4, 4), activation = "relu"),
+            tf.keras.layers.Conv2D(10, (4, 4), activation = 'relu'),
             tf.keras.layers.MaxPooling2D(pool_size = (2, 2)),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(128, activation = 'relu'),
@@ -36,14 +42,14 @@ class NN:
         ])
 
         model.compile(optimizer = 'adam',
-                      loss = 'binary_crossentropy',
-                      metrics = ['accuracy'])
+                        loss = 'binary_crossentropy',
+                        metrics = ['accuracy'])
 
         return model
 
     def trainingData(self, dataDir):
-        exoplanetData = glob.glob(os.path.join(dataDir, "*_1.png"))
-        noExoplanetData = glob.glob(os.path.join(dataDir, "*_0.png"))
+        exoplanetData = glob.glob(os.path.join(dataDir, '*_1.png'))
+        noExoplanetData = glob.glob(os.path.join(dataDir, '*_0.png'))
 
         files = np.append(
             noExoplanetData,

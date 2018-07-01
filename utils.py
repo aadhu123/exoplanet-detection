@@ -30,10 +30,10 @@ def fitsToImage(filePath, imgDir, fileName):
     data = hdul[1].data
     hdul.close()
     
-    nans = np.isnan(data["SAP_FLUX"])
+    nans = np.isnan(data['SAP_FLUX'])
 
-    time = data["TIME"][~nans]
-    flux = data["SAP_FLUX"][~nans]
+    time = data['TIME'][~nans]
+    flux = data['SAP_FLUX'][~nans]
 
     # fit = interpolate.interp1d(time, flux)
     # # fileName = os.path.splitext(os.path.basename(filePath))[0]
@@ -45,7 +45,7 @@ def fitsToImage(filePath, imgDir, fileName):
     fig = plt.Figure(figsize=(pixels / 50, pixels / 50), dpi = 50)
     ax = fig.add_subplot(111)
 
-    ax.scatter(time, flux, s = 1, c = "w")
+    ax.scatter(time, flux, s = 1, c = 'w')
     ax.set_xlim(min(time), max(time))
     ax.set_ylim(min(flux), max(flux))
 

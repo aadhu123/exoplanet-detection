@@ -12,7 +12,7 @@ import datetime
 
 realDir = os.path.dirname(os.path.realpath(__file__))
 
-dataDir = os.path.join(realDir, "train/data")
+dataDir = os.path.join(realDir, 'train/data')
 
 def main():
     nn = NN()
