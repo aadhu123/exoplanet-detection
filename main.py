@@ -16,11 +16,11 @@ import datetime
 import math
 from utils import realDir
 
-dataDir = os.path.join(realDir, "data")
-logsDir = os.path.join(realDir, "logs")
+dataDir = os.path.join(realDir, 'data')
+logsDir = os.path.join(realDir, 'logs')
 logfile = os.path.join(logsDir, datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%S.csv"))
 
-modelName = "model.hdf5"
+modelName = 'model.hdf5'
 
 nn = NN()
 nn.load(modelName)
@@ -50,7 +50,7 @@ def main():
 
 def predict(kicDir):
     kicId = os.path.basename(kicDir)
-    files = glob.glob(os.path.join(kicDir, "*"))
+    files = glob.glob(os.path.join(kicDir, '*'))
     
     imgs = []
     for f in files:
