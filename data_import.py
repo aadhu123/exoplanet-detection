@@ -22,7 +22,7 @@ def deleteTempFiles(kicId):
 # def processData(kicId, hasExoplanet):
 #     kicId = str(kicId).zfill(9)
     
-#     filePaths = glob.glob(os.path.join(tmpDir, kicId, "*.fits"))
+#     filePaths = glob.glob(os.path.join(tmpDir, kicId, '*.fits'))
 
 #     for (idx, filePath) in enumerate(filePaths):
 #         fileName = "%s_%i_%i"%(kicId, idx, hasExoplanet)
