@@ -9,7 +9,7 @@ import numpy as np
 plt.style.use('dark_background')
 np.set_printoptions(threshold = np.inf)
 
-from MAST_SDK import *
+from MAST import *
 from astropy.io import fits
 import os.path
 
