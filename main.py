@@ -63,4 +63,6 @@ def predict(kicDir):
         utils.writeToLog(logfile, "%s,%s,%s,%s\n"%(kicId, surpassed, len(probabilities), surpassed/len(probabilities)))
 
 if __name__ == '__main__':
+    print("Started at %s UTC"%datetime.datetime.utcnow().isoformat())
     main()
+    print("Finished at %s UTC"%datetime.datetime.utcnow().isoformat())

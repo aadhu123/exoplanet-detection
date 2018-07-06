@@ -20,4 +20,6 @@ def main():
     nn.save()
 
 if __name__ == '__main__':
+    print("Started at %s UTC"%datetime.datetime.utcnow().isoformat())
     main()
+    print("Finished at %s UTC"%datetime.datetime.utcnow().isoformat())
